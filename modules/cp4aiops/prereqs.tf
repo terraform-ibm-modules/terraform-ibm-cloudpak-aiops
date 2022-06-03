@@ -1,3 +1,8 @@
+#####################################################
+# Cloud Pak for CP4AIOPS
+# Copyright 2022 IBM
+#####################################################
+
 locals {
   setAIOPS_catalog_source = "aiops-catalog.yaml"
 }

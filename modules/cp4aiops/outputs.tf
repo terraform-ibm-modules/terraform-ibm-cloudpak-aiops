@@ -1,3 +1,8 @@
+#####################################################
+# Cloud Pak for CP4AIOPS
+# Copyright 2022 IBM
+#####################################################
+
 output "ai_manager_endpoint" {
   depends_on = [
     data.external.get_aiman_endpoints,

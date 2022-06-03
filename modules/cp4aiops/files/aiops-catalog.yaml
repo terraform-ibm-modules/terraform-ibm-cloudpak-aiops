@@ -1,3 +1,8 @@
+#####################################################
+# Cloud Pak for CP4AIOPS
+# Copyright 2022 IBM
+#####################################################
+
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:

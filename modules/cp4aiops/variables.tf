@@ -1,7 +1,7 @@
-variable "enable" {
-  default     = true
-  description = "If set to true installs Cloud-Pak for Data on the given cluster"
-}
+#####################################################
+# Cloud Pak for CP4AIOPS
+# Copyright 2022 IBM
+#####################################################
 
 variable "cluster_config_path" {
   description = "Path to the Kubernetes configuration file to access your cluster"

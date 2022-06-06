@@ -1,78 +1,56 @@
-# Terraform Module to install Cloud Pak for Watson AIOps
+# IBM Cloud Pak for AIOps - Terraform Module
 
-This Terraform Module installs **Cloud Pak for Watson AIOps** on an Openshift (ROKS) cluster on IBM Cloud.
+This is a module and example to make it easier to provision Cloud Pak for AIOps on an IBM Cloud Platform OpenShift Cluster provisioned on either Classic or VPC infrastructure.
 
-**Module Source**: `git::https://github.com/ibm-hcbt/terraform-ibm-cloud-pak.git//modules/cp4aiops`
+## Compatibility
 
-- [Terraform Module to install Cloud Pak for Watson AIOps](#terraform-module-to-install-cloud-pak-for-aiops)
-  - [Set up access to IBM Cloud](#set-up-access-to-ibm-cloud)
-  - [Setting up the OpenShift cluster](#setting-up-the-openshift-cluster)
-  - [Installing the CP4AIOps Module](#installing-the-cp4aiops-module)
-  - [Input Variables](#input-variables)
-    - [Event Manager Options](#event-manager-options)
-  - [Executing the Terraform Script](#executing-the-terraform-script)
-  - [Accessing the Cloud Pak Console](#accessing-the-cloud-pak-console)
-  - [Post Installation Instructions](#post-installation-instructions)
-  - [Clean up](#clean-up)
-  - [Troubleshooting](#troubleshooting)
-  
-## Set up access to IBM Cloud
+This module is meant for use with Terraform 0.13 (and higher).
 
-If running these modules from your local terminal, you need to set the credentials to access IBM Cloud.
+## Pre-requisites
 
-Go [here](../CREDENTIALS.md) for details.
+OpenShift cluster is required that contains at least 4 nodes of size 16x64. If VPC is used on OpenShift 4.6 or earlier, Portworx™ is required to provide necessary storage classes. If VPC is used on OpenShift 4.7 or later, ODF is required to provide necessary storage classes.
 
+### Terraform plugins
 
-### Setting up the OpenShift cluster
+- [Terraform](https://www.terraform.io/downloads.html) 0.13 (or later)
+- [terraform-provider-ibm](https://github.com/IBM-Cloud/terraform-provider-ibm) 1.34 (or later)
 
-NOTE: an OpenShift cluster is required to install the Cloud Pak. This can be an existing cluster or can be provisioned using our `roks` Terraform module.
+For installation instructions, refer [here](https://ibm.github.io/cloud-enterprise-examples/iac/setup-environment/#install-terraform)
 
-To provision a new cluster, refer [here](https://github.com/ibm-hcbt/terraform-ibm-cloud-pak/tree/main/modules/roks) for the code to add to your Terraform script. The recommended size for an OpenShift 4.7+ cluster on IBM Cloud Classic contains `9` workers (3 for `AIManager` and 6 for `EventManager`) of flavor `b3c.16x64`.
+## Usage
 
-However please read the following documentation:
-- [Cloud Pak for Watson AIOps documentation (AIManager)](https://www.ibm.com/docs/en/cloud-paks/cloud-pak-watson-aiops/3.2.1?topic=requirements-ai-manager)
-- [Cloud Pak for Watson AIOps documentation (EventManager)](https://www.ibm.com/docs/en/noi/1.6.3?topic=preparing-sizing)
+A full example is located in the [examples](./examples/cp4aiops) folder.
 
-To confirm these parameters or if you are using IBM Cloud VPC or a different OpenShift version.
-
-Add the following code to get the OpenShift cluster (new or existing) configuration:
+e.g:
 
 ```hcl
+provider "ibm" {
+  region           = var.region
+  ibmcloud_api_key = var.ibmcloud_api_key
+}
+
 data "ibm_resource_group" "group" {
-  name = var.resource_group
+  name = var.resource_group_name
+}
+
+resource "null_resource" "mkdir_kubeconfig_dir" {
+  triggers = { always_run = timestamp() }
+  provisioner "local-exec" {
+    command = "mkdir -p ${var.cluster_config_path}"
+  }
 }
 
 data "ibm_container_cluster_config" "cluster_config" {
-  cluster_name_id   = var.cluster_name_id
+  depends_on = [null_resource.mkdir_kubeconfig_dir]
+  cluster_name_id   = var.cluster_name_or_id
   resource_group_id = data.ibm_resource_group.group.id
-  download          = true
-  config_dir        = "./kube/config"     // Create this directory in advance
-  admin             = false
-  network           = false
+  config_dir        = var.cluster_config_path
 }
-```
 
-**NOTE**: Create the `./kube/config` directory if it doesn't exist.
 
-Input:
-
-- `cluster_name_id`: either the cluster name or ID.
-
-- `ibm_resource_group`:  resource group where the cluster is running
-
-Output:
-
-`ibm_container_cluster_config` used as input for the `cp4aiops` module
-
-### Installing the CP4AIOPS Module
-
-Use a `module` block assigning `source` to `git::https://github.com/ibm-hcbt/terraform-ibm-cloud-pak.git//modules/cp4aiops`. Then set the [input variables](#input-variables) required to install the Cloud Pak for Watson AIOps.
-
-```hcl
+// Cloud Pak for AIOps module
 module "cp4aiops" {
-  source    = "./.."
-  enable    = true
-
+  source    = "../../modules/cp4aiops"
   cluster_config_path = data.ibm_container_cluster_config.cluster_config.config_file_path
   on_vpc              = var.on_vpc
   portworx_is_ready   = 1          // Assuming portworx is installed if using VPC infrastructure
@@ -82,12 +60,90 @@ module "cp4aiops" {
   entitled_registry_user_email = var.entitled_registry_user_email
 
   // AIOps specific parameters:
-  namespace            = var.namespace
   accept_aiops_license = var.accept_aiops_license
-  enable_aimanager     = var.enable_aimanager
-  enable_event_manager = var.enable_event_manager
+  namespace            = "aiops"
+  enable_aimanager     = true
+
+  enable_event_manager = true
+
+  // Persistence option
+  enable_persistence               = var.enable_persistence
+
+  // Integrations - humio
+  humio_repo                       = var.humio_repo
+  humio_url                        = var.humio_url
+
+  // LDAP options
+  ldap_port                        = var.ldap_port
+  ldap_mode                        = var.ldap_mode
+  ldap_user_filter                 = var.ldap_user_filter
+  ldap_bind_dn                     = var.ldap_bind_dn
+  ldap_ssl_port                    = var.ldap_ssl_port
+  ldap_url                         = var.ldap_url
+  ldap_suffix                      = var.ldap_suffix
+  ldap_group_filter                = var.ldap_group_filter
+  ldap_base_dn                     = var.ldap_base_dn
+  ldap_server_type                 = var.ldap_server_type
+
+  // Service Continuity
+  continuous_analytics_correlation = var.continuous_analytics_correlation
+  backup_deployment                = var.backup_deployment
+
+  // Zen Options
+  zen_deploy                       = var.zen_deploy
+  zen_ignore_ready                 = var.zen_ignore_ready
+  zen_instance_name                = var.zen_instance_name
+  zen_instance_id                  = var.zen_instance_id
+  zen_namespace                    = var.zen_namespace
+  zen_storage                      = var.zen_storage
+
+  // TOPOLOGY OPTIONS:
+  // App Discovery -
+  enable_app_discovery             = var.enable_app_discovery
+  ap_cert_secret                   = var.ap_cert_secret
+  ap_db_secret                     = var.ap_db_secret
+  ap_db_host_url                   = var.ap_db_host_url
+  ap_secure_db                     = var.ap_secure_db
+
+  // Network Discovery
+  enable_network_discovery         = var.enable_network_discovery
+
+  // Observers
+  obv_docker                       = var.obv_docker
+  obv_taddm                        = var.obv_taddm
+  obv_servicenow                   = var.obv_servicenow
+  obv_ibmcloud                     = var.obv_ibmcloud
+  obv_alm                          = var.obv_alm
+  obv_contrail                     = var.obv_contrail
+  obv_cienablueplanet              = var.obv_cienablueplanet
+  obv_kubernetes                   = var.obv_kubernetes
+  obv_bigfixinventory              = var.obv_bigfixinventory
+  obv_junipercso                   = var.obv_junipercso
+  obv_dns                          = var.obv_dns
+  obv_itnm                         = var.obv_itnm
+  obv_ansibleawx                   = var.obv_ansibleawx
+  obv_ciscoaci                     = var.obv_ciscoaci
+  obv_azure                        = var.obv_azure
+  obv_rancher                      = var.obv_rancher
+  obv_newrelic                     = var.obv_newrelic
+  obv_vmvcenter                    = var.obv_vmvcenter
+  obv_rest                         = var.obv_rest
+  obv_appdynamics                  = var.obv_appdynamics
+  obv_jenkins                      = var.obv_jenkins
+  obv_zabbix                       = var.obv_zabbix
+  obv_file                         = var.obv_file
+  obv_googlecloud                  = var.obv_googlecloud
+  obv_dynatrace                    = var.obv_dynatrace
+  obv_aws                          = var.obv_aws
+  obv_openstack                    = var.obv_openstack
+  obv_vmwarensx                    = var.obv_vmwarensx
+
+  // Backup Restore
+  enable_backup_restore            = var.enable_backup_restore
 }
 ```
+
+## Inputs
 
 ## Input Variables
 
@@ -175,15 +231,97 @@ obv_zabbix                       | bool   | Enable Zabbix Topology Observer     
 enable_backup_restore            | bool   | Enable Analytics Backups                                                                                                                           |           | false
 
 
-## Executing the Terraform Script
+## Outputs
 
-Execute the following commands to install the Cloud Pak:
+| Name                               | Description                                                         |
+| ---------------------------------- | --------------------------------------------------------------------|
+| `cp4aiops_aiman_url`               | Access your Cloud Pak for AIOPS AIManager deployment at this URL.   |
+| `cp4aiops_aiman_user`              | Username for your Cloud Pak for AIOPS AIManager deployment.         |
+| `cp4aiops_aiman_password`          | Password for your Cloud Pak for AIOPSAIManager  deployment.         |
+| `cp4aiops_evtman_url`              | Access your Cloud Pak for AIOP EventManager deployment at this URL. |
+| `cp4aiops_evtman_user`             | Username for your Cloud Pak for AIOPS EventManager deployment.      |
+| `cp4aiops_evtman_password`         | Password for your Cloud Pak for AIOPS EventManager deployment.      |
+
+
+## Install
+
+
+### Pre-commit hooks
+
+Run the following command to execute the pre-commit hooks defined in .pre-commit-config.yaml file
 
 ```bash
+pre-commit run -a
+```
+
+You can install pre-commit tool using
+
+```bash
+pip install pre-commit
+```
+
+or
+
+```bash
+pip3 install pre-commit
+```
+
+### Detect Secret hook
+
+Used to detect secrets within a code base.
+
+To create a secret baseline file run following command
+
+```bash
+detect-secrets scan --update .secrets.baseline
+```
+
+While running the pre-commit hook, if you encounter an error like
+
+```console
+WARNING: You are running an outdated version of detect-secrets.
+Your version: 0.13.1+ibm.27.dss
+Latest version: 0.13.1+ibm.46.dss
+See upgrade guide at https://ibm.biz/detect-secrets-how-to-upgrade
+```
+
+run below command
+
+```bash
+pre-commit autoupdate
+```
+
+which upgrades all the pre-commit hooks present in .pre-commit.yaml file.
+
+## How to input variable values through a file
+
+To review the plan for the configuration defined (no resources actually provisioned)
+
+```bash
+terraform plan -var-file=./input.tfvars
+```
+
+To execute and start building the configuration defined in the plan (provisions resources)
+
+```bash
+terraform apply -var-file=./input.tfvars
+```
+
+To destroy all related resources
+
+```bash
+terraform destroy -var-file=./input.tfvars
+```
+
+## Executing the Terraform Script
+Run the following commands to execute the TF script (containing the modules to create/use ROKS and Portworx). Execution may take about 5-15 minutes:
+
+```
 terraform init
 terraform plan
-terraform apply
+terraform apply -auto-approve
 ```
+All optional parameters by default will be set to null in respective example's variable.tf file. If user wants to configure any optional parameters he has overwrite the default value in the input.tfvars file.
 
 ## Accessing the Cloud Pak Console
 
@@ -213,10 +351,21 @@ This section is _REQUIRED_ if you install AIManager and EventManager.
 Please follow the documentation starting at `step 3` to `step 9` [here](https://www.ibm.com/docs/en/cloud-paks/cloud-pak-watson-aiops/3.2.1?topic=installing-ai-manager-event-manager) for further info.
 
 
-## Clean up
+## Cleanup
 
-When you finish using the cluster, release the resources by executing the following command:
+To uninstall Cloud Pak for AIOps, an API KEY to the account running the cluster is required as is the cluster id. Once these are set, you can run the uninstall_cp4aiops.sh script to remove all resources and the namespace.
 
+```
+export API_KEY="******************" // pragma: allowlist secret
+export CLUSTER_ID="****************"
+export NAMESPACE="cp4aiops"
+./scripts/uninstall_cp4aiops.sh
+```
+Once all resources have been removed from the cluster, run:
 ```bash
 terraform destroy
 ```
+
+## Note
+
+All optional parameters, by default, will be set to `null` in respective example's variable.tf file. You can also override these optional parameters.

@@ -20,7 +20,7 @@ For instructions to run using the local Terraform Client on your local machine g
 customizing these values in the `terraform.tfvars` file:
 
 ```hcl
-  cluster_name_or_id            = "******************"
+  cluster_name_or_id    = "******************"
   on_vpc                = true
   region                = "us-south"
   resource_group_name   = "Default"

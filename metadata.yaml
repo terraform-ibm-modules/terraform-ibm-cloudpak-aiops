@@ -4,25 +4,25 @@
 #####################################################
 
 ---
-id: "terraform-ibm-modules/cloudpak-cp4aiops/ibm/1.0"
-name: "cloudpak-cp4aiops"
+id: "terraform-ibm-modules/cloudpak-roks_classic_with_cp4aiops/ibm/1.0"
+name: "cloudpak-roks_classic_with_cp4aiops"
 namespace: "terraform-ibm-modules"
 version: "1.0"
 providers: ["ibm"]
 provider_logo_url: "/images/providers/cloudpak.jpg"
 description: "Terraform module to install and work with Cloud Pak for CP4AIOPS on IBM Cloud"
-source: "https://github.com/terraform-ibm-modules/terraform-ibm-cloudpak-cp4aiops"
+source: "https://github.com/terraform-ibm-modules/terraform-ibm-cloudpak-roks_classic_with_cp4aiops"
 owner: "ibmtfprovider"
 published_at: ""
-registry: "https://registry.terraform.io/modules/terraform-ibm-modules/cloudpak-cp4aiops/ibm/latest"
+registry: "https://registry.terraform.io/modules/terraform-ibm-modules/cloudpak-roks_classic_with_cp4aiops/ibm/latest"
 alias: "ob"
-tags: ["cloudpak","cp4aiops"]
+tags: ["cloudpak","roks_classic_with_cp4aiops"]
 ###################################
 # Root module
 ###################################
 root:
-  - path: "github.com/terraform-ibm-modules/terraform-ibm-cloudpak-cp4aiops"
-    name: "cloudpak-cp4aiops"
+  - path: "github.com/terraform-ibm-modules/terraform-ibm-cloudpak-roks_classic_with_cp4aiops"
+    name: "cloudpak-roks_classic_with_cp4aiops"
     provider_dependencies:
       - name: "ibm"
         namespace: "IBM-Cloud"
@@ -71,8 +71,8 @@ root:
       - name: "namespace"
         type : string
         description: "Namespace on cluster for Cloud Pak for CP4AIOPS"
-        default_value: "cp4aiops"
-        example: "cp4aiops"
+        default_value: "roks_classic_with_cp4aiops"
+        example: "roks_classic_with_cp4aiops"
         is_required: true
         is_sensitive: false
         is_nullable: false

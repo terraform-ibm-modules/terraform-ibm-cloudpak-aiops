@@ -19,7 +19,7 @@ For installation instructions, refer [here](https://ibm.github.io/cloud-enterpri
 
 ## Usage
 
-A full example is located in the [examples](./examples/cp4aiops) folder.
+A full example is located in the [examples](examples/roks_classic_with_cp4aiops) folder.
 
 e.g:
 

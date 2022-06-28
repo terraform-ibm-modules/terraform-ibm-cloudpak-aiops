@@ -1,19 +1,3 @@
-variable "accept_aimanager_license" {
-  default = false
-  type = bool
-  description = "Do you accept the licensing agreement for AIManager? `T/F`"
-}
-
-variable "accept_event_manager_license" {
-  default = false
-  type = bool
-  description = "Do you accept the licensing agreement for EventManager? `T/F`"
-}
-
-variable "cluster_name_or_id" {
-  description = "Id of cluster for AIOps to be installed on"
-}
-
 variable "ibmcloud_api_key" {
   description = "IBMCloud API key (https://cloud.ibm.com/docs/account?topic=account-userapikey#create_user_key)"
 }
@@ -22,15 +6,25 @@ variable "region" {
   description = "Region that cluster resides in"
 }
 
-variable "resource_group_name" {
+variable "resource_group" {
   default     = "cloud-pak-sandbox-ibm"
   description = "Resource group that cluster resides in"
+}
+
+variable "cluster_name_or_id" {
+  description = "Id of cluster for AIOps to be installed on"
 }
 
 variable "on_vpc" {
   default     = false
   type        = bool
   description = "If set to true, lets the module know cluster is using VPC Gen2"
+}
+
+variable "cluster_config_path" {
+  default     = "./.kube/config"
+  type        = string
+  description = "Defaulted to `./.kube/config` but for schematics, use `/tmp/.schematic/.kube/config`"
 }
 
 variable "entitled_registry_key" {
@@ -43,10 +37,16 @@ variable "entitled_registry_user_email" {
   description = "Docker email address"
 }
 
-variable "cluster_config_path" {
-  default     = "./.kube/config"
-  type        = string
-  description = "Defaulted to `./.kube/config` but for schematics, use `/tmp/.schematic/.kube/config`"
+variable "accept_aimanager_license" {
+  default = false
+  type = bool
+  description = "Do you accept the licensing agreement for AIManager? `T/F`"
+}
+
+variable "accept_event_manager_license" {
+  default = false
+  type = bool
+  description = "Do you accept the licensing agreement for EventManager? `T/F`"
 }
 
 #############################################

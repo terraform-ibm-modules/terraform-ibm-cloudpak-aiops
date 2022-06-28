@@ -9,26 +9,20 @@ variable "region" {
   type        = string
 }
 
-variable "resource_group_name" {
-  default     = "cloud-pak-sandbox-ibm"
-  description = "Resource group that cluster resides in"
+variable "resource_group" {
+  default     = "default"
+  description = "Region where the cluster is created. Managing resource groups: (https://cloud.ibm.com/docs/account?topic=account-rgs&interface=ui)"
 }
 
-variable "on_vpc" {
-  default     = false
-  type        = bool
-  description = "If set to true, lets the module know cluster is using VPC Gen2"
-}
-
-variable "cluster_config_path" {
-  default     = "./.kube/config"
+variable "entitlement" {
+  description = "create your cluster with existing entitlement"
   type        = string
-  description = "Defaulted to `./.kube/config` but for schematics, use `/tmp/.schematic/.kube/config`"
+  default     = "cloud_pak"
 }
 
 variable "roks_project_name" {
   default     = "cp4aiops"
-  description = "Used to tag the cluster i.e. 'project:{project_name}'"
+  description = "The project name is used to name the cluster with the environment name. It's also used to label the cluster and other resources. Used to tag the cluster i.e. 'project:{project_name}'"
 }
 
 variable "environment" {
@@ -39,12 +33,6 @@ variable "environment" {
 variable "owner" {
   default     = ""
   description = "Used to tag the cluster i.e. 'owner:{owner}'"
-}
-
-variable "resource_group" {
-  description = "Enter Name of the resource group"
-  default     = "Default"
-  type        = string
 }
 
 variable "worker_zone" {
@@ -65,18 +53,6 @@ variable "worker_pool_flavor" {
   default     = "b3c.16x64"
 }
 
-variable "public_vlan" {
-  description = "The ID of the public VLAN that you want to use for your worker nodes. List available VLANs in the zone: `ibmcloud target -g <resource-group>; ibmcloud ks vlan ls --zone <zone>`"
-  type        = string
-  default     = null
-}
-
-variable "private_vlan" {
-  description = "The ID of the private VLAN that you want to use for your worker nodes. List available VLANs in the zone: `ibmcloud target -g <resource-group>; ibmcloud ks vlan ls --zone <zone>`"
-  type        = string
-  default     = null
-}
-
 variable "hardware" {
   description = "The level of hardware isolation for your worker node."
   type        = string
@@ -89,12 +65,6 @@ variable "master_service_public_endpoint" {
   default     = true
 }
 
-variable "entitlement" {
-  description = "create your cluster with existing entitlement"
-  type        = string
-  default     = "cloud_pak"
-}
-
 variable "force_delete_storage" {
   description = "force the removal of persistent storage associated with the cluster during cluster deletion."
   type        = bool
@@ -105,6 +75,30 @@ variable "roks_version" {
   description = "The OpenShift version that you want to set up in your cluster."
   type        = string
   default     = null
+}
+
+variable "cluster_config_path" {
+  default     = "./.kube/config"
+  type        = string
+  description = "Defaulted to `./.kube/config` but for schematics, use `/tmp/.schematic/.kube/config`"
+}
+
+variable "public_vlan" {
+  description = "The ID of the public VLAN that you want to use for your worker nodes. List available VLANs in the zone: `ibmcloud target -g <resource-group>; ibmcloud ks vlan ls --zone <zone>`"
+  type        = string
+  default     = null
+}
+
+variable "private_vlan" {
+  description = "The ID of the private VLAN that you want to use for your worker nodes. List available VLANs in the zone: `ibmcloud target -g <resource-group>; ibmcloud ks vlan ls --zone <zone>`"
+  type        = string
+  default     = null
+}
+
+locals {
+  on_vpc     = false
+//  type        = bool
+//  description = "If set to true, lets the module know cluster is using VPC Gen2"
 }
 
 locals {

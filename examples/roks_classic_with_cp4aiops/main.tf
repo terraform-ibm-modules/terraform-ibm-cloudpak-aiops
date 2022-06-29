@@ -49,7 +49,7 @@ data "ibm_container_cluster_config" "cluster_config" {
 module "cp4aiops" {
   source    = "../../."
   cluster_config_path = data.ibm_container_cluster_config.cluster_config.config_dir
-  on_vpc              = 0
+  on_vpc              = false
   portworx_is_ready   = 1          // Assuming portworx is installed if using VPC infrastructure
 
   // Entitled Registry parameters:

@@ -1,12 +1,13 @@
 provider "ibm" {
+  ibmcloud_api_key = var.ibmcloud_api_key
   region = var.region
 }
 
-//resource "random_string" "this" {
-//  length  = 6
-//  special = false
-//  upper   = false
-//}
+resource "random_string" "this" {
+  length  = 16
+  special = false
+  upper   = false
+}
 
 data "ibm_resource_group" "rg" {
   name = var.resource_group

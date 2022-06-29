@@ -37,7 +37,7 @@ variable "owner" {
 
 variable "worker_zone" {
   description = "The data center where the worker node is created. List all available zones with `ibmcloud ks locations`"
-  default     = "us-south"
+  default     = "dal12"
   type        = string
 }
 

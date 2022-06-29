@@ -33,7 +33,7 @@ resource "null_resource" "mkdir_kubeconfig_dir" {
   triggers = { always_run = timestamp() }
 
   provisioner "local-exec" {
-    command = "mkdir -p ${var.config_dir}"
+    command = "mkdir -p ${var.cluster_config_path}"
   }
 }
 
@@ -41,14 +41,14 @@ data "ibm_container_cluster_config" "cluster_config" {
   depends_on        = [null_resource.mkdir_kubeconfig_dir]
   cluster_name_id   = module.classic-openshift-single-zone-cluster.classic_openshift_cluster_id
   resource_group_id = data.ibm_resource_group.rg.id
-  config_dir        = var.config_dir
+  config_dir        = var.cluster_config_path
   admin             = true
 }
 
 // Module:
 module "cp4aiops" {
   source    = "../../."
-  cluster_config_path = data.ibm_container_cluster_config.cluster_config.config_file_path
+  cluster_config_path = data.ibm_container_cluster_config.cluster_config.config_dir
   on_vpc              = 0
   portworx_is_ready   = 1          // Assuming portworx is installed if using VPC infrastructure
 

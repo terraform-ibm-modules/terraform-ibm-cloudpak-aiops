@@ -30,6 +30,14 @@ module "classic-openshift-single-zone-cluster" {
   entitlement           = (var.entitlement != null ? var.entitlement : "")
 }
 
+
+resource "time_sleep" "wait_30_min" {
+  depends_on = [module.classic-openshift-single-zone-cluster]
+
+  create_duration = "600s"
+}
+
+
 resource "null_resource" "mkdir_kubeconfig_dir" {
   triggers = { always_run = timestamp() }
 

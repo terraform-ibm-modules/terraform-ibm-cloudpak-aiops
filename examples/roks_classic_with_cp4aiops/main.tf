@@ -60,11 +60,11 @@ data "ibm_container_cluster_config" "cluster_config" {
 module "cp4aiops" {
   depends_on = [data.ibm_container_cluster_config.cluster_config]
 
-  source    = "../../."
+  source    = "../../"
 
-//  ibmcloud_api_key         = var.ibmcloud_api_key
-//  region                   = var.region
-//  resource_group           = var.resource_group
+  ibmcloud_api_key         = var.ibmcloud_api_key
+  region                   = var.region
+  resource_group           = var.resource_group
 
 //  cluster_name_id     = da
   cluster_config_path = data.ibm_container_cluster_config.cluster_config.config_dir

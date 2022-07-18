@@ -66,10 +66,10 @@ module "cp4aiops" {
   region                   = var.region
   resource_group           = var.resource_group
 
-//  cluster_name_id     = da
-  cluster_config_path = data.ibm_container_cluster_config.cluster_config.config_dir
-  on_vpc              = false
-  portworx_is_ready   = 1          // Assuming portworx is installed if using VPC infrastructure
+  cluster_name_id          = data.ibm_container_cluster_config.cluster_config.cluster_name_id
+  cluster_config_path      = data.ibm_container_cluster_config.cluster_config.config_dir
+  on_vpc                   = false
+  portworx_is_ready        = 1          // Assuming portworx is installed if using VPC infrastructure
 
   // Entitled Registry parameters:
   entitled_registry_key        = var.entitled_registry_key
@@ -78,13 +78,13 @@ module "cp4aiops" {
   // AIOps specific parameters:
   accept_aimanager_license     = var.accept_aimanager_license
   accept_event_manager_license = var.accept_event_manager_license
-  namespace            = "aiops"
-  enable_aimanager     = true
+  namespace                    = "aiops"
+  enable_aimanager             = true
 
   //************************************
   // EVENT MANAGER OPTIONS START *******
   //************************************
-  enable_event_manager = true
+  enable_event_manager         = true
 
   // Persistence option
   enable_persistence               = var.enable_persistence

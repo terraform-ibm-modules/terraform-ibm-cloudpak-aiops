@@ -15,6 +15,10 @@ variable "region" {
     description = "Region where the cluster is hosted."
 }
 
+variable "cluster_name_id" {
+  description = "cluster ID or name"
+}
+
 variable "cluster_config_path" {
   description = "Path to the Kubernetes configuration file to access your cluster"
 }

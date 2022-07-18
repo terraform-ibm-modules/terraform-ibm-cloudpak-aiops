@@ -1,10 +1,10 @@
 provider "ibm" {
   ibmcloud_api_key = var.ibmcloud_api_key
-  region = var.region
+  region           = var.region
 }
 
 resource "random_string" "this" {
-  length  = 16
+  length  = 6
   special = false
   upper   = false
 }
@@ -31,8 +31,8 @@ module "classic-openshift-single-zone-cluster" {
 }
 
 
-resource "time_sleep" "wait_30_min" {
-  depends_on = [module.classic-openshift-single-zone-cluster]
+resource "time_sleep" "wait_for_30_min" {
+//  depends_on = [module.classic-openshift-single-zone-cluster]
 
   create_duration = "600s"
 }
@@ -47,16 +47,26 @@ resource "null_resource" "mkdir_kubeconfig_dir" {
 }
 
 data "ibm_container_cluster_config" "cluster_config" {
-  depends_on        = [null_resource.mkdir_kubeconfig_dir]
+  depends_on        = [null_resource.mkdir_kubeconfig_dir, time_sleep.wait_for_30_min]
   cluster_name_id   = module.classic-openshift-single-zone-cluster.classic_openshift_cluster_id
   resource_group_id = data.ibm_resource_group.rg.id
   config_dir        = var.cluster_config_path
   admin             = true
+  download          = true
+  network           = false
 }
 
 // Module:
 module "cp4aiops" {
+  depends_on = [data.ibm_container_cluster_config.cluster_config]
+
   source    = "../../."
+
+//  ibmcloud_api_key         = var.ibmcloud_api_key
+//  region                   = var.region
+//  resource_group           = var.resource_group
+
+//  cluster_name_id     = da
   cluster_config_path = data.ibm_container_cluster_config.cluster_config.config_dir
   on_vpc              = false
   portworx_is_ready   = 1          // Assuming portworx is installed if using VPC infrastructure

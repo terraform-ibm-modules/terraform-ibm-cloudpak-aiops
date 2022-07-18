@@ -2,10 +2,10 @@ locals {
   setAIOPS_catalog_source = "aiops-catalog.yaml"
 }
 
+
 #############################################
 # Checking for Licensing Agreements
 #############################################
-
 resource "null_resource" "check_aimanager_licensing" {
   provisioner "local-exec" {
     environment = {
@@ -16,6 +16,7 @@ resource "null_resource" "check_aimanager_licensing" {
     command     = "if [ $ENABLE_AIMANAGER == true ] && [ $LICENSING == false ]; then echo \"\n\"; echo \"Please accept the AIManager licensing agreement.\"; exit 1; fi"
   }
 }
+
 
 resource "null_resource" "check_evtmanager_licensing" {
   provisioner "local-exec" {
@@ -28,10 +29,10 @@ resource "null_resource" "check_evtmanager_licensing" {
   }
 }
 
-#############################################
-# Preinstallation Steps for AIOPS - AIManager
-#############################################
 
+###############################################
+# Preinstallation Steps for AIOPS - AIManager #
+###############################################
 resource "null_resource" "create_namespace" {
   depends_on = [
     null_resource.check_aimanager_licensing,
@@ -47,6 +48,7 @@ resource "null_resource" "create_namespace" {
     }
   }
 }
+
 
 resource "null_resource" "create_entitlement_account" {
   count = var.enable_aimanager ? 1 : 0
@@ -64,6 +66,7 @@ resource "null_resource" "create_entitlement_account" {
   }
 }
 
+
 resource "null_resource" "configure_network_policies" {
   depends_on = [null_resource.create_entitlement_account]
   
@@ -76,10 +79,10 @@ resource "null_resource" "configure_network_policies" {
   }
 }
 
+
 ###########################################
 # Preinstallation Steps for AIOPS - EventManager
 ###########################################
-
 resource "null_resource" "event_man_prereq_install" {
   count = var.enable_event_manager ? 1 : 0
   depends_on = [null_resource.create_namespace, null_resource.configure_network_policies]
@@ -89,12 +92,17 @@ resource "null_resource" "event_man_prereq_install" {
     working_dir = "${path.module}/scripts/eventmanager"
 
     environment = {
+//      IC_API_KEY      = var.ibmcloud_api_key
+//      REGION          = var.region
+//      RESOURCE_GROUP  = var.resource_group
+//      CLUSTER_ID      = data.external
       KUBECONFIG                    = var.cluster_config_path
       NAMESPACE                     = var.namespace
       ENTITLEMENT_KEY               = var.entitled_registry_key
     }
   }
 }
+
 
 ###########################################
 # Used in either installation
@@ -111,6 +119,7 @@ resource "null_resource" "create_catalog_source" {
     command     = "kubectl apply -f ${local.setAIOPS_catalog_source}"
   }
 }
+
 
 ###########################################
 # Create and configure storage
@@ -131,9 +140,10 @@ resource "null_resource" "install_portworx_sc" {
   }
 }
 
-#######################
-# Catch-all checkpoint
-#######################
+
+########################
+# Catch-all checkpoint #
+########################
 resource "null_resource" "prereqs_checkpoint" {
   depends_on = [
     var.portworx_is_ready,

@@ -34,7 +34,7 @@ module "classic-openshift-single-zone-cluster" {
 resource "time_sleep" "wait_for_30_min" {
 //  depends_on = [module.classic-openshift-single-zone-cluster]
 
-  create_duration = "600s"
+  create_duration = "800s"
 }
 
 

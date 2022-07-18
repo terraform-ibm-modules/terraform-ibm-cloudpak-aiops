@@ -78,7 +78,7 @@ variable "roks_version" {
 }
 
 variable "cluster_config_path" {
-  default     = "./.kube/config"
+  default     = "./.kube/config/"
   type        = string
   description = "Defaulted to `./.kube/config` but for schematics, use `/tmp/.schematic/.kube/config`"
 }

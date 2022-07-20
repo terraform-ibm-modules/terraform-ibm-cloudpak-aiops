@@ -31,8 +31,8 @@ module "classic-openshift-single-zone-cluster" {
 }
 
 
-resource "time_sleep" "wait_for_30_min" {
-//  depends_on = [module.classic-openshift-single-zone-cluster]
+resource "time_sleep" "wait_for_ingress" {
+  depends_on = [module.classic-openshift-single-zone-cluster]
 
   create_duration = "800s"
 }
@@ -47,7 +47,7 @@ resource "null_resource" "mkdir_kubeconfig_dir" {
 }
 
 data "ibm_container_cluster_config" "cluster_config" {
-  depends_on        = [null_resource.mkdir_kubeconfig_dir, time_sleep.wait_for_30_min]
+  depends_on        = [null_resource.mkdir_kubeconfig_dir, time_sleep.wait_for_ingress]
   cluster_name_id   = module.classic-openshift-single-zone-cluster.classic_openshift_cluster_id
   resource_group_id = data.ibm_resource_group.rg.id
   config_dir        = var.cluster_config_path

@@ -16,8 +16,8 @@ resource "null_resource" "install_aiops_operator" {
     working_dir = "${path.module}/scripts/aimanager/"
 
     environment = {
-      KUBECONFIG                    = var.cluster_config_path
-      NAMESPACE                     = var.namespace
+      KUBECONFIG    = var.cluster_config_path
+      NAMESPACE     = var.namespace
     }
   }
 }

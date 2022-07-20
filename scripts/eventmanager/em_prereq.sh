@@ -1,13 +1,5 @@
 #!/bin/sh
 
-ibmcloud login -r "${REGION}" -g "${RESOURCE_GROUP}" --apikey "${IC_API_KEY}" > /dev/null
-ibmcloud config --check-version=false > /dev/null
-ibmcloud ks cluster config -c "${CLUSTER_ID}" --admin > /dev/null
-sleep 3
-echo
-
-kubectl create ns "${NAMESPACE}"
-
 echo "=== Creating noi-registry-key secret ==="
 kubectl create secret docker-registry noi-registry-secret  \
     --docker-username=cp\

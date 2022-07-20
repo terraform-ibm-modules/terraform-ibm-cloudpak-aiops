@@ -92,10 +92,10 @@ resource "null_resource" "event_man_prereq_install" {
     working_dir = "${path.module}/scripts/eventmanager"
 
     environment = {
-      IC_API_KEY                    = var.ibmcloud_api_key
-      REGION                        = var.region
-      RESOURCE_GROUP                = var.resource_group
-      CLUSTER_ID                    = var.cluster_name_id
+//      IC_API_KEY                    = var.ibmcloud_api_key
+//      REGION                        = var.region
+//      RESOURCE_GROUP                = var.resource_group
+//      CLUSTER_ID                    = var.cluster_name_id
       KUBECONFIG                    = var.cluster_config_path
       NAMESPACE                     = var.namespace
       ENTITLEMENT_KEY               = var.entitled_registry_key

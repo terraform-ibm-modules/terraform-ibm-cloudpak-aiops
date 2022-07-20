@@ -1,3 +1,8 @@
+output "kube_config" {
+  description = "Cluster config "
+  value = module.cp4aiops.kube-config
+}
+
 output "cp4aiops_aiman_url" {
   description = "Access your Cloud Pak for AIOPS AIManager deployment at this URL."
   value = module.cp4aiops.ai_manager_endpoint

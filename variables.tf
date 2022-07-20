@@ -2,22 +2,6 @@
 # Cloud Pak for CP4AIOPS
 # Copyright 2022 IBM
 #####################################################
-variable "ibmcloud_api_key" {
-  description = "Enter your IBM API Cloud access key. Visit this link for more information: https://cloud.ibm.com/docs/account?topic=account-userapikey&interface=ui "
-}
-
-variable "resource_group" {
-  default     = "Default"
-  description = "Resource group name where the cluster is hosted."
-}
-
-variable "region" {
-    description = "Region where the cluster is hosted."
-}
-
-variable "cluster_name_id" {
-  description = "cluster ID or name"
-}
 
 variable "cluster_config_path" {
   description = "Path to the Kubernetes configuration file to access your cluster"

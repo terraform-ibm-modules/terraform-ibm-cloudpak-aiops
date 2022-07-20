@@ -62,11 +62,6 @@ module "cp4aiops" {
 
   source    = "../../"
 
-  ibmcloud_api_key         = var.ibmcloud_api_key
-  region                   = var.region
-  resource_group           = var.resource_group
-
-  cluster_name_id          = data.ibm_container_cluster_config.cluster_config.cluster_name_id
   cluster_config_path      = data.ibm_container_cluster_config.cluster_config.config_file_path
   on_vpc                   = false
   portworx_is_ready        = 1          // Assuming portworx is installed if using VPC infrastructure

@@ -1,5 +1,10 @@
 #!/bin/sh
 
+echo "=== Creating ${NAMESPACE} Namespace/Project ==="
+kubectl create ns "${NAMESPACE}"
+echo
+
+
 echo "=== Creating noi-registry-key secret ==="
 kubectl create secret docker-registry noi-registry-secret  \
     --docker-username=cp\

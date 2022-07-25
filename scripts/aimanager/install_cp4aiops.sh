@@ -47,29 +47,6 @@ spec:
     enabled: false
 EOF
 
-###
-# Wait for AIOpsAnalyticsOrchestrator to create..
-evtCount=0
-evtTimeout=15 #15 mins
-SLEEP_TIME="60"
-while true; do
-  if [ "$evtCount" -eq "$evtTimeout" ]; then
-    echo "Kind: AIOpsAnalyticsOrchestrator did not create a resource. Please check the Installation: ibm-aiops"
-    exit 1
-  fi
-  # Check to make sure it exists:
-  # Wait for AIOpsAnalyticsOrchestrator resource creation and then check for the instance creation.
-  if [ "`kubectl api-resources | grep AIOpsAnalyticsOrchestrator`" != "" ]; then
-    if [ "`kubectl get AIOpsAnalyticsOrchestrator aiops -n ${NAMESPACE} --ignore-not-found=true`" != "" ]; then
-      break
-    fi
-  fi
-  echo "Waiting for AIOpsAnalyticsOrchestrator resource, sleeping ${SLEEP_TIME} seconds"
-  sleep $SLEEP_TIME
-  evtCount=$(( evtCount+1 ))
-done
-
-echo "=== Adding pull secret to the ibm-aiops-orchestrator operator"
 
 # Edit file and add the pull secret
 cat <<EOF | kubectl apply -f -
@@ -106,6 +83,33 @@ spec:
   pullSecrets:
   - ibm-aiops-pull-secret
 EOF
+
+
+
+###
+# Wait for AIOpsAnalyticsOrchestrator to create..
+evtCount=0
+evtTimeout=15 #15 mins
+SLEEP_TIME="60"
+while true; do
+  if [ "$evtCount" -eq "$evtTimeout" ]; then
+    echo "Kind: AIOpsAnalyticsOrchestrator did not create a resource. Please check the Installation: ibm-aiops"
+    exit 1
+  fi
+  # Check to make sure it exists:
+  # Wait for AIOpsAnalyticsOrchestrator resource creation and then check for the instance creation.
+  if [ "`kubectl api-resources | grep AIOpsAnalyticsOrchestrator`" != "" ]; then
+    if [ "`kubectl get AIOpsAnalyticsOrchestrator aiops -n ${NAMESPACE} --ignore-not-found=true`" != "" ]; then
+      break
+    fi
+  fi
+  echo "Waiting for AIOpsAnalyticsOrchestrator resource, sleeping ${SLEEP_TIME} seconds"
+  sleep $SLEEP_TIME
+  evtCount=$(( evtCount+1 ))
+done
+
+echo "=== Adding pull secret to the ibm-aiops-orchestrator operator"
+
 
 # Find the pod and restart it if it is there.
 echo '=== checking for aiops-ir-analytics pod ==='

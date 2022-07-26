@@ -30,7 +30,7 @@ provider "ibm" {
 }
 
 data "ibm_resource_group" "group" {
-  name = var.resource_group_name
+  name = var.resource_group
 }
 
 resource "null_resource" "mkdir_kubeconfig_dir" {
@@ -48,28 +48,32 @@ data "ibm_container_cluster_config" "cluster_config" {
 }
 
 
-// Cloud Pak for AIOps module
+// Module:
 module "cp4aiops" {
-  source    = "../../modules/cp4aiops"
+  source    = "../../."
   cluster_config_path = data.ibm_container_cluster_config.cluster_config.config_file_path
   on_vpc              = var.on_vpc
-  portworx_is_ready   = 1          // Assuming portworx is installed if using VPC infrastructure
+  portworx_is_ready   = 1         
 
   // Entitled Registry parameters:
   entitled_registry_key        = var.entitled_registry_key
   entitled_registry_user_email = var.entitled_registry_user_email
 
   // AIOps specific parameters:
-  accept_aiops_license = var.accept_aiops_license
+  accept_aimanager_license     = var.accept_aimanager_license
+  accept_event_manager_license = var.accept_event_manager_license
   namespace            = "aiops"
   enable_aimanager     = true
 
+  //************************************
+  // EVENT MANAGER OPTIONS START *******
+  //************************************
   enable_event_manager = true
 
   // Persistence option
   enable_persistence               = var.enable_persistence
 
-  // Integrations - humio
+  // AIOps - humio
   humio_repo                       = var.humio_repo
   humio_url                        = var.humio_url
 
@@ -104,10 +108,8 @@ module "cp4aiops" {
   ap_db_secret                     = var.ap_db_secret
   ap_db_host_url                   = var.ap_db_host_url
   ap_secure_db                     = var.ap_secure_db
-
   // Network Discovery
   enable_network_discovery         = var.enable_network_discovery
-
   // Observers
   obv_docker                       = var.obv_docker
   obv_taddm                        = var.obv_taddm
@@ -173,8 +175,8 @@ For an example of how to put all this together, refer to our [Cloud Pak for Wats
 Name                             | Type   | Description                                                                                                                                        | Sensitive | Default
 -------------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ----------------------------
 enable_persistence               | bool   | Enables persistence storage for kafka, cassandra, couchdb, and others. Default is `true`                                                           |           | true
-humio_repo                       | string | To enable Humio search integrations, provide the Humio Repository for your Humio instance                                                          |           | 
-humio_url                        | string | To enable Humio search integrations, provide the Humio Base URL of your Humio instance (on-prem/cloud)                                             |           | 
+humio_repo                       | string | To enable Humio search AIOps, provide the Humio Repository for your Humio instance                                                          |           | 
+humio_url                        | string | To enable Humio search AIOps, provide the Humio Base URL of your Humio instance (on-prem/cloud)                                             |           | 
 ldap_port                        | number | Configure the port of your organization's LDAP server.                                                                                             |           | 3389
 ldap_mode                        | string | Choose `standalone` for a built-in LDAP server or `proxy` and connect to an external organization LDAP server. See http://ibm.biz/install_noi_icp. |           | standalone
 ldap_storage_class               | string | LDAP Storage class - note: only needed for `standalone` mode                                                                                       |           | 

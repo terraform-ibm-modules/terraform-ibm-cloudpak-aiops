@@ -28,8 +28,9 @@ resource "null_resource" "install_cp4aiops" {
   ]
   
   triggers = {
-    namespace_sha1                      = sha1(var.namespace)
-    docker_params_sha1                  = sha1(join("", [var.entitled_registry_user_email, local.entitled_registry_key]))
+    namespace                         = sha1(var.namespace)
+    docker_params_sha1                = sha1(join("", [var.entitled_registry_user_email, local.entitled_registry_key]))
+    kubeconfig                        = var.cluster_config_path
   }
 
   provisioner "local-exec" {
@@ -91,6 +92,12 @@ resource "null_resource" "install_event_manager_operator" {
 }
 
 resource "null_resource" "install_event_manager" {
+
+  triggers = {
+    namespace                         = sha1(var.namespace)
+    docker_params_sha1                = sha1(join("", [var.entitled_registry_user_email, local.entitled_registry_key]))
+    kubeconfig                        = var.cluster_config_path
+  }
 
   provisioner "local-exec" {
     command     = "./install_event_manager.sh"
@@ -168,6 +175,17 @@ resource "null_resource" "install_event_manager" {
       OBV_VMWARENSX                 = var.obv_vmwarensx
 
       ENABLE_BACKUP_RESTORE         = var.enable_backup_restore
+    }
+  }
+
+   provisioner "local-exec" {
+    when        = destroy
+    command     = "./uninstall_cp4ba.sh"
+    working_dir = "${path.module}/scripts"
+
+    environment = {
+      KUBECONFIG         = self.triggers.kubeconfig
+      AIOPS_PROJECT_NAME = self.triggers.namespace
     }
   }
 

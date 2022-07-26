@@ -13,9 +13,6 @@ echo "Setting project ${AIOPS_PROJECT_NAME} ..."
 kubectl get ns "${AIOPS_PROJECT_NAME}"
 echo
 
-kubectl get zen-metastoredb -n "${AIOPS_PROJECT_NAME}" | awk '{print $1}'
-echo
-
 
 for resource in subscription deployments deploymentconfigs configmaps OperatorGroup statefulset EventStreams csv scc jobs pods secrets services roles rolebindings pvc pv namespaces ;
 do

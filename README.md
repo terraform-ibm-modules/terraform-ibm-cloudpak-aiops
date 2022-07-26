@@ -10,6 +10,29 @@ This module is meant for use with Terraform 0.13 (and higher).
 
 OpenShift cluster is required that contains at least 4 nodes of size 16x64. If VPC is used on OpenShift 4.6 or earlier, Portworx™ is required to provide necessary storage classes. If VPC is used on OpenShift 4.7 or later, ODF is required to provide necessary storage classes.
 
+## Requirements for AIOps
+
+Please ensure your cluster is setup to install AIManager and Eventmanager: `9` nodes.
+
+Current min spec requires:
+- 3 nodes for AIManager    @ 16x64
+- 6 nodes for EventManager @ 16x64
+
+## Run using local Terraform Client
+
+For instructions to run using the local Terraform Client on your local machine go [here](../Using_Terraform.md)
+customizing these values in the `terraform.tfvars` file:
+
+```hcl
+ibmcloud_api_key      = "******************"
+resource_group        = "******************"
+region                = "******************"
+cluster_name_or_id    = "******************"
+on_vpc                = "******************"
+entitled_registry_key = "******************"
+entitled_registry_user_email = "***********"
+```
+
 ### Terraform plugins
 
 - [Terraform](https://www.terraform.io/downloads.html) 0.13 (or later)

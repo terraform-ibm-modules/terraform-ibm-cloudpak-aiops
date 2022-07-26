@@ -28,7 +28,7 @@ func TestAccIBMCP4I(t *testing.T) {
 	// terraform testing.
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		// The path to where our Terraform code is located
-		TerraformDir: "../examples/roks_classic_with_cp4i",
+		TerraformDir: "../examples/roks_classic_with_cp4aiops",
 
 		// Variables to pass to our Terraform code using -var options
 		// Settings are for cloud account Humio 2129514

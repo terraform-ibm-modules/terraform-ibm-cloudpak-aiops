@@ -20,7 +20,7 @@ For instructions to run using the local Terraform Client on your local machine g
 customizing these values in the `terraform.tfvars` file:
 
 ```hcl
-ibmcloud_api_key      = "******************"
+ibmcloud_api_key      = "******************"    // pragma: allowlist secret
 resource_group        = "******************"
 region                = "******************"
 cluster_name_or_id    = "******************"

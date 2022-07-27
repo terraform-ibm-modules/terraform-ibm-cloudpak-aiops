@@ -79,7 +79,7 @@ spec:
       dbsecret: ${SET_AP_DB_SECRET}
       db2database: taddm
       dburl: ${SET_AP_DB_HOST_URL}
-      certSecret: ${SET_AP_CERT_SECRET}
+      certSecret: ${SET_AP_CERT_SECRET}     # pragma: allowlist secret
       db2archuser: archuser
       secure: ${AP_SECURE_DB} 
       scaleDS: '1'

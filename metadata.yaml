@@ -1,0 +1,144 @@
+#####################################################
+# Cloud Pak for CP4AIOPS
+# Copyright 2022 IBM
+#####################################################
+
+---
+id: "terraform-ibm-modules/cloudpak-roks_classic_with_cp4aiops/ibm/1.0"
+name: "cloudpak-roks_classic_with_cp4aiops"
+namespace: "terraform-ibm-modules"
+version: "1.0"
+providers: ["ibm"]
+provider_logo_url: "/images/providers/cloudpak.jpg"
+description: "Terraform module to install and work with Cloud Pak for CP4AIOPS on IBM Cloud"
+source: "https://github.com/terraform-ibm-modules/terraform-ibm-cloudpak-roks_classic_with_cp4aiops"
+owner: "ibmtfprovider"
+published_at: ""
+registry: "https://registry.terraform.io/modules/terraform-ibm-modules/cloudpak-roks_classic_with_cp4aiops/ibm/latest"
+alias: "ob"
+tags: ["cloudpak","roks_classic_with_cp4aiops"]
+###################################
+# Root module
+###################################
+root:
+  - path: "github.com/terraform-ibm-modules/terraform-ibm-cloudpak-roks_classic_with_cp4aiops"
+    name: "cloudpak-roks_classic_with_cp4aiops"
+    provider_dependencies:
+      - name: "ibm"
+        namespace: "IBM-Cloud"
+        source: "IBM-Cloud/ibm"
+        version: ""
+    inputs:
+      - name: "cluster_config_path"
+        type: string
+        description: "Path to the Kubernetes configuration file to access your cluster."
+        example: "./.kube/config"
+        is_required: false
+        is_sensitive: false
+        is_nullable: false
+        is_force_new: true
+        is_provision_controller: false
+        is_count_controller: false
+      - name: "storageclass"
+        type: string
+        description: "Storage class to use."
+        example: "ibmc-file-gold-gid"
+        default_value: "ibmc-file-gold-gid"
+        is_required: false
+        is_sensitive: false
+        is_nullable: false
+        is_force_new: false
+        is_provision_controller: false
+        is_count_controller: false
+      - name: "entitled_registry_key"
+        type : string
+        description: "Cloud Pak entitlement key. Retrieve from https://myibm.ibm.com/products-services/containerlibrary"
+        is_required: true
+        is_sensitive: true
+        is_nullable: false
+        is_force_new: false
+        is_provision_controller: false
+        is_count_controller: false
+        related_to: ["entitled_registry_user_email"]
+      - name: "entitled_registry_user_email"
+        type : string
+        is_required: true
+        description: "Entitlement key email address"
+        example: "john.doe@ibm.com"
+        is_sensitive: false
+        related_to: ["entitled_registry_key"]
+        regex: "^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$"
+      - name: "namespace"
+        type : string
+        description: "Namespace on cluster for Cloud Pak for CP4AIOPS"
+        default_value: "roks_classic_with_cp4aiops"
+        example: "roks_classic_with_cp4aiops"
+        is_required: true
+        is_sensitive: false
+        is_nullable: false
+        is_force_new: false
+        is_provision_controller: false
+        is_count_controller: false
+        regex: "^([a-z]|[a-z][-a-z0-9]*[a-z0-9])$"
+    outputs:
+      - name: "endpoint"
+        type : string
+        description : "URL to get to Cloud Pak for CP4AIOPS Console"
+        is_sensitive: false
+        related_to: ["user","password"]
+      - name: "user"
+        type : string
+        description : "Admin User name for Cloud Pak for CP4AIOPS Console"
+        is_sensitive: false
+        related_to: ["endpoint","password"]
+      - name: "password"
+        type : string
+        description : "Password for Cloud Pak for CP4AIOPS Console. For security reasons, please change immediately"
+        is_sensitive: false
+        related_to: ["endpoint","user"]
+    locals:
+      - name: "entitled_registry"
+        type: string
+        example: "cp.icr.io"
+        description : "Image Registry"
+        is_hardcoded : true
+        related_to: ["entitled_registry_user","entitled_registry_key"]
+      - name: "entitled_registry_user"
+        type: string
+        example: "cp"
+        description : "User for image registry"
+        is_hardcoded : true
+        related_to: ["entitled_registry","entitled_registry_key"]
+      - name: "entitled_registry_key"
+        type: string
+        description : "Chomped entitled_registry_key"
+        is_hardcoded : true
+        related_to: ["entitled_registry","entitled_registry_user"]
+        derived_from: "entitled_registry_key"
+      - name: "catalog_content"
+        type: string
+        description : "Catalog yaml derived from template"
+        is_hardcoded : false
+        # derived_from: "${path.module}/templates/catalog.yaml.tmpl"
+      - name: "subscription_content"
+        type: string
+        example: ""
+        description : "Subscription yaml derived from template"
+        is_hardcoded : false
+        # derived_from: "${path.module}/templates/subscription.yaml.tmpl"
+      - name: "navigator_content"
+        type: string
+        example: ""
+        description : "Platform Navigator yaml derived from template"
+        is_hardcoded : false
+        # derived_from: "${path.module}/templates/navigator.yaml.tmpl"
+    resources:
+      - type : "null_resource"
+        name: "install_cp4aiops"
+        description : "Invokes script to install CP4AIOPS"
+        provider: "hashicorp"
+    datasources:
+      - type : "external"
+        name: "get_endpoints"
+        description : "Invoke script to derive outputs"
+        provider: "hashicorp"

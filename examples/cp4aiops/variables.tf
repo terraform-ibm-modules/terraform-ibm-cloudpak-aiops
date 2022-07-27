@@ -1,10 +1,18 @@
-#####################################################
-# Cloud Pak for CP4AIOPS
-# Copyright 2022 IBM
-#####################################################
+variable "ibmcloud_api_key" {
+  description = "IBMCloud API key (https://cloud.ibm.com/docs/account?topic=account-userapikey#create_user_key)"
+}
 
-variable "cluster_config_path" {
-  description = "Path to the Kubernetes configuration file to access your cluster"
+variable "region" {
+  description = "Region that cluster resides in"
+}
+
+variable "resource_group" {
+  default     = "cloud-pak-sandbox-ibm"
+  description = "Resource group that cluster resides in"
+}
+
+variable "cluster_name_or_id" {
+  description = "Id of cluster for AIOps to be installed on"
 }
 
 variable "on_vpc" {
@@ -13,22 +21,20 @@ variable "on_vpc" {
   description = "If set to true, lets the module know cluster is using VPC Gen2"
 }
 
-variable "portworx_is_ready" {
-  type = any
-  default = null
+variable "cluster_config_path" {
+  default     = "./.kube/config"
+  type        = string
+  description = "Defaulted to `./.kube/config` but for schematics, use `/tmp/.schematic/.kube/config`"
 }
 
 variable "entitled_registry_key" {
+  type        = string
   description = "Get the entitlement key from https://myibm.ibm.com/products-services/containerlibrary"
 }
 
 variable "entitled_registry_user_email" {
-  description = "Required: Email address of the user owner of the Entitled Registry Key"
-}
-
-variable "namespace" {
-  default = "cpaiops"
-  description = "Namespace for Cloud Pak for AIOps"
+  type        = string
+  description = "Docker email address"
 }
 
 variable "accept_aimanager_license" {
@@ -41,18 +47,6 @@ variable "accept_event_manager_license" {
   default = false
   type = bool
   description = "Do you accept the licensing agreement for EventManager? `T/F`"
-}
-
-variable "enable_aimanager" {
-  default = true
-  type = bool
-  description = "Install AIManager? `T/F`"
-}
-
-variable "enable_event_manager" {
-  default = true
-  type = bool
-  description = "Install Event Manager? `T/F`"
 }
 
 #############################################
@@ -78,6 +72,7 @@ variable "humio_url" {
   type = string
   description = "To enable Humio search integrations, provide the Humio Base URL of your Humio instance (on-prem/cloud)"
 }
+
 
 # LDAP:
 variable "ldap_port" {

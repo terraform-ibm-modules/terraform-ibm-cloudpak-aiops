@@ -1,35 +1,113 @@
-#####################################################
-# Cloud Pak for CP4AIOPS
-# Copyright 2022 IBM
-#####################################################
+########## ROKS VARIABLES #########
+
+variable "ibmcloud_api_key" {
+  description = "IBMCloud API key (https://cloud.ibm.com/docs/account?topic=account-userapikey#create_user_key)"
+}
+
+variable "region" {
+  description = "The region where the cluster will be created. List all available regions with: `ibmcloud regions`"
+  type        = string
+}
+
+variable "resource_group" {
+  default     = "default"
+  description = "Region where the cluster is created. Managing resource groups: (https://cloud.ibm.com/docs/account?topic=account-rgs&interface=ui)"
+}
+
+variable "entitlement" {
+  description = "create your cluster with existing entitlement"
+  type        = string
+  default     = "cloud_pak"
+}
+
+variable "roks_project_name" {
+  default     = "cp4aiops"
+  description = "The project name is used to name the cluster with the environment name. It's also used to label the cluster and other resources. Used to tag the cluster i.e. 'project:{project_name}'"
+}
+
+variable "environment" {
+  default     = "dev"
+  description = "Used to tag the cluster i.e. 'env:{environment}'"
+}
+
+variable "owner" {
+  default     = ""
+  description = "Used to tag the cluster i.e. 'owner:{owner}'"
+}
+
+variable "worker_zone" {
+  description = "The data center where the worker node is created. List all available zones with `ibmcloud ks locations`"
+  default     = "dal12"
+  type        = string
+}
+
+variable "workers_count" {
+  description = "Number of worker nodes per zone"
+  type        = number
+  default     = 4
+}
+
+variable "worker_pool_flavor" {
+  description = "The machine type for your worker node."
+  type        = string
+  default     = "b3c.16x64"
+}
+
+variable "hardware" {
+  description = "The level of hardware isolation for your worker node."
+  type        = string
+  default     = "shared"
+}
+
+variable "master_service_public_endpoint" {
+  description = "Enable the public service endpoint to make the master publicly accessible."
+  type        = bool
+  default     = true
+}
+
+variable "force_delete_storage" {
+  description = "force the removal of persistent storage associated with the cluster during cluster deletion."
+  type        = bool
+  default     = null
+}
+
+variable "roks_version" {
+  description = "The OpenShift version that you want to set up in your cluster."
+  type        = string
+  default     = 4.7
+}
 
 variable "cluster_config_path" {
-  description = "Path to the Kubernetes configuration file to access your cluster"
+  default     = "./.kube/config/"
+  type        = string
+  description = "Defaulted to `./.kube/config` but for schematics, use `/tmp/.schematic/.kube/config`"
 }
 
-variable "on_vpc" {
-  default     = false
-  type        = bool
-  description = "If set to true, lets the module know cluster is using VPC Gen2"
+variable "public_vlan" {
+  description = "The ID of the public VLAN that you want to use for your worker nodes. List available VLANs in the zone: `ibmcloud target -g <resource-group>; ibmcloud ks vlan ls --zone <zone>`"
+  type        = string
+  default     = null
 }
 
-variable "portworx_is_ready" {
-  type = any
-  default = null
+variable "private_vlan" {
+  description = "The ID of the private VLAN that you want to use for your worker nodes. List available VLANs in the zone: `ibmcloud target -g <resource-group>; ibmcloud ks vlan ls --zone <zone>`"
+  type        = string
+  default     = null
 }
 
-variable "entitled_registry_key" {
-  description = "Get the entitlement key from https://myibm.ibm.com/products-services/containerlibrary"
+locals {
+  on_vpc     = false
+//  type        = bool
+//  description = "If set to true, lets the module know cluster is using VPC Gen2"
 }
 
-variable "entitled_registry_user_email" {
-  description = "Required: Email address of the user owner of the Entitled Registry Key"
+locals {
+  cluster_name = "${var.roks_project_name}-${var.environment}-${random_string.this.result}"
+  roks_version = format("%s_openshift", split("_", var.roks_version)[0])
 }
 
-variable "namespace" {
-  default = "cpaiops"
-  description = "Namespace for Cloud Pak for AIOps"
-}
+
+######### AIOPS VARIABLES #########
 
 variable "accept_aimanager_license" {
   default = false
@@ -43,16 +121,14 @@ variable "accept_event_manager_license" {
   description = "Do you accept the licensing agreement for EventManager? `T/F`"
 }
 
-variable "enable_aimanager" {
-  default = true
-  type = bool
-  description = "Install AIManager? `T/F`"
+variable "entitled_registry_key" {
+  type        = string
+  description = "Get the entitlement key from https://myibm.ibm.com/products-services/containerlibrary"
 }
 
-variable "enable_event_manager" {
-  default = true
-  type = bool
-  description = "Install Event Manager? `T/F`"
+variable "entitled_registry_user_email" {
+  type        = string
+  description = "Docker email address"
 }
 
 #############################################
@@ -78,6 +154,7 @@ variable "humio_url" {
   type = string
   description = "To enable Humio search integrations, provide the Humio Base URL of your Humio instance (on-prem/cloud)"
 }
+
 
 # LDAP:
 variable "ldap_port" {

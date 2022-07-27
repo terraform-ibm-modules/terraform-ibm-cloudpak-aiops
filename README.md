@@ -32,7 +32,7 @@ For instructions to run using the local Terraform Client on your local machine g
 customizing these values in the `terraform.tfvars` file:
 
 ```hcl
-ibmcloud_api_key      = "******************"
+ibmcloud_api_key      = "******************"  // pragma: allowlist secret
 resource_group        = "******************"
 region                = "******************"
 cluster_name_or_id    = "******************"
@@ -50,7 +50,7 @@ e.g:
 ```hcl
 provider "ibm" {
   region           = var.region
-  ibmcloud_api_key = var.ibmcloud_api_key
+  ibmcloud_api_key = var.ibmcloud_api_key    // pragma: allowlist secret
 }
 
 data "ibm_resource_group" "group" {
@@ -128,8 +128,8 @@ module "cp4aiops" {
   // TOPOLOGY OPTIONS:
   // App Discovery -
   enable_app_discovery             = var.enable_app_discovery
-  ap_cert_secret                   = var.ap_cert_secret
-  ap_db_secret                     = var.ap_db_secret
+  ap_cert_secret                   = var.ap_cert_secret           // pragma: allowlist secret
+  ap_db_secret                     = var.ap_db_secret             // pragma: allowlist secret
   ap_db_host_url                   = var.ap_db_host_url
   ap_secure_db                     = var.ap_secure_db
   // Network Discovery

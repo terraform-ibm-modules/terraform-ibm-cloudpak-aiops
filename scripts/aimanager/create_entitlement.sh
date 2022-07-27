@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo "=== Creating ibm-entitlement-key secret ==="
+echo "=== Creating ibm-entitlement-key secret ==="            // pragma: allowlist secret
 kubectl create secret docker-registry ibm-entitlement-key \
     --docker-username=cp\
     --docker-password=${ENTITLEMENT_KEY} \

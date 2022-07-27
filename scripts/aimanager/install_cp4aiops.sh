@@ -26,7 +26,7 @@ spec:
   size: small
   storageClass: ${storage_class}
   storageClassLargeBlock: ${storage_block_class}
-  imagePullSecret: ibm-entitlement-key
+  imagePullSecret: ibm-entitlement-key              // pragma: allowlist secret
   license:
     accept: ${ACCEPT_LICENSE}
   pakModules:
@@ -57,12 +57,12 @@ metadata:
   namespace: $NAMESPACE
 spec:
   cassandra:
-    bindingSecret: aiops-topology-cassandra-auth-secret
+    bindingSecret: aiops-topology-cassandra-auth-secret       // pragma: allowlist secret
     host: aiops-topology-cassandra
     portNumber: 9042
     secretName: aiops-topology-cassandra-auth-secret
   couch:
-    bindingSecret: ibm-aiops-couchdb-secret
+    bindingSecret: ibm-aiops-couchdb-secret                   // pragma: allowlist secret
     host: example-couchdbcluster
     portNumber: 443
     secretName: c-example-couchdbcluster-m
@@ -75,7 +75,7 @@ spec:
     probableCause: true
     sparkRuntime: true
   kafka:
-    bindingSecret: ibm-aiops-kafka-secret
+    bindingSecret: ibm-aiops-kafka-secret                     // pragma: allowlist secret
   license:
     accept: true
   size: small

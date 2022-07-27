@@ -32,7 +32,7 @@ entitled_registry_user_email = "***********"
 ## Input Parameters and their Descriptions
 
 | Name                               | Description                                                           | Default  | Required |
-| ---------------------------------- | --------------------------------------------------------------------- | -------- | -------- |
+| ---------------------------------- | --------------------------------------------------------------------- | -------- | -------- |   
 | `ibmcloud_api_key`                 | IBM Cloud API key (https://cloud.ibm.com/docs/account?topic=account-userapikey#create_user_key)|          | Yes      |
 | `region`  | The region where the cluster will be created. List all available regions with: `ibmcloud regions` (https://cloud.ibm.com/docs/codeengine?topic=codeengine-regions)|        | No   |
 | `resource_group` | Region where the cluster is created. Managing resource groups: (https://cloud.ibm.com/docs/account?topic=account-rgs&interface=ui) | `default` | Yes |

@@ -11,7 +11,7 @@ The Terraform script requires the following list of input variables. Here are so
 
 ```hcl
 # --------------------- CLOUD ---------------------- 
-ibmcloud_api_key      = "******************"
+ibmcloud_api_key      = "******************"   // pragma: allowlist secret
 iaas_classic_username = "******************"
 resource_group        = "******************"
 region                = "******************"

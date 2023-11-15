@@ -5,4 +5,15 @@
 # any change of this settings.yml file is detected by the GitHub App and
 # the settings of this repository are updated immediately.
 
-_extends: repo-settings
+_extends:  repo-settings:.github/sap-settings-v2.yml
+
+# repo-specific settings
+#
+repository:
+  # By changing this field, you rename the repository.
+  name: "terraform-ibm-cloudpak-aiops"
+
+  # The description is displayed under the repository name on the
+  # organization page and in the 'About' section of the repository.
+  description: "Cloud Pak for Watson AIOps"
+  topics: terraform, ibm-cloud, watson, aiops
